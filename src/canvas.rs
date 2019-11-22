@@ -119,7 +119,32 @@ impl Canvas {
             0,
         );
 
+        let icon = Canvas::get_icon();
+        let texture = self.gl_context.create_texture().unwrap();
+        self.gl_context.active_texture(web_sys::WebGlRenderingContext::TEXTURE0);
+        self.gl_context.bind_texture(web_sys::WebGlRenderingContext::TEXTURE_2D, Some(&texture));
+        self.gl_context.tex_image_2d_with_u32_and_u32_and_image(
+            web_sys::WebGlRenderingContext::TEXTURE_2D,
+            0,
+            web_sys::WebGlRenderingContext::RGBA as i32,
+            web_sys::WebGlRenderingContext::RGBA,
+            web_sys::WebGlRenderingContext::UNSIGNED_BYTE,
+            &icon,
+        ).expect("???");
+        self.gl_context.generate_mipmap(web_sys::WebGlRenderingContext::TEXTURE_2D);
+
+        self.gl_context.clear_color(1f32, 1f32, 0f32, 1f32);
         self.gl_context.clear(web_sys::WebGlRenderingContext::COLOR_BUFFER_BIT);
+        self.gl_context.color_mask(true, true, true, false);
+        self.gl_context.enable(web_sys::WebGlRenderingContext::BLEND);
+        self.gl_context.blend_func(web_sys::WebGlRenderingContext::SRC_ALPHA, web_sys::WebGlRenderingContext::ONE_MINUS_SRC_ALPHA);
         self.gl_context.draw_arrays(web_sys::WebGlRenderingContext::POINTS, 0, (vertices.len() / 2) as i32);
+    }
+
+    fn get_icon() -> web_sys::HtmlImageElement {
+        let window = web_sys::window().unwrap();
+        let document = window.document().unwrap();
+        let icon = document.get_element_by_id("icon").unwrap();
+        icon.dyn_into::<web_sys::HtmlImageElement>().unwrap()
     }
 }

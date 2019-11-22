@@ -7,7 +7,6 @@ mod logging;
 pub fn main() -> Result<(), JsValue> {
     let canvas = canvas::Canvas::initialize();
     let (width, height) = canvas.dimensions();
-    console_log!("Width: {}, Height: {}", width, height);
 
     let vertex_shader = canvas.compile_vertex_shader("
         uniform vec2 screenSize;        // width/height of screen
@@ -20,20 +19,23 @@ pub fn main() -> Result<(), JsValue> {
         }
     ")?;
     let fragment_shader = canvas.compile_fragment_shader("
+        uniform sampler2D spriteTexture;  // texture we are drawing
+
         void main() {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = texture2D(spriteTexture, gl_PointCoord);
         }
     ")?;
     let program = canvas.compile_program(&vertex_shader, &fragment_shader)?;
-    console_log!("Program: {:?}", program);
 
     canvas.use_program(&program);
     let screen_size_uniform_location = canvas.get_uniform_location(&program, "screenSize");
     canvas.uniform2f(&screen_size_uniform_location, width as f32, height as f32);
 
     let sprite_position_attrib_location = canvas.get_attrib_location(&program, "spritePosition");
-    let vertices = [300f32, 400f32, 100f32, 100f32];
+    let vertices = [300f32, 400f32, 100f32, 100f32, 140f32, 80f32];
     canvas.draw_vertices(sprite_position_attrib_location, &vertices);
+
+    console_log!("Success!");
 
     Ok(())
 }
