@@ -79,4 +79,47 @@ impl Canvas {
 
         Ok(program)
     }
+
+    pub fn use_program(&self, program: &web_sys::WebGlProgram) {
+        self.gl_context.use_program(Some(program));
+    }
+
+    pub fn get_uniform_location(&self, program: &web_sys::WebGlProgram, name: &str) -> web_sys::WebGlUniformLocation {
+        self.gl_context.get_uniform_location(program, name).unwrap()
+    }
+
+    pub fn uniform2f(&self, uniform_location: &web_sys::WebGlUniformLocation, x: f32, y: f32) {
+        self.gl_context.uniform2f(Some(&uniform_location), x, y);
+    }
+
+    pub fn get_attrib_location(&self, program: &web_sys::WebGlProgram, name: &str) -> i32 {
+        self.gl_context.get_attrib_location(program, name)
+    }
+
+    pub fn draw_vertices(&self, attrib_location: i32, vertices: &[f32]) {
+        let buffer = self.gl_context.create_buffer().unwrap();
+        self.gl_context.bind_buffer(web_sys::WebGlRenderingContext::ARRAY_BUFFER, Some(&buffer));
+
+        unsafe {
+            let vertices_array = js_sys::Float32Array::view(&vertices);
+            self.gl_context.buffer_data_with_array_buffer_view(
+                web_sys::WebGlRenderingContext::ARRAY_BUFFER,
+                &vertices_array,
+                web_sys::WebGlRenderingContext::DYNAMIC_DRAW,
+            );
+        }
+
+        self.gl_context.enable_vertex_attrib_array(attrib_location as u32);
+        self.gl_context.vertex_attrib_pointer_with_i32(
+            attrib_location as u32,
+            2,
+            web_sys::WebGlRenderingContext::FLOAT,
+            false,
+            0,
+            0,
+        );
+
+        self.gl_context.clear(web_sys::WebGlRenderingContext::COLOR_BUFFER_BIT);
+        self.gl_context.draw_arrays(web_sys::WebGlRenderingContext::POINTS, 0, (vertices.len() / 2) as i32);
+    }
 }

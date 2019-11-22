@@ -27,5 +27,13 @@ pub fn main() -> Result<(), JsValue> {
     let program = canvas.compile_program(&vertex_shader, &fragment_shader)?;
     console_log!("Program: {:?}", program);
 
+    canvas.use_program(&program);
+    let screen_size_uniform_location = canvas.get_uniform_location(&program, "screenSize");
+    canvas.uniform2f(&screen_size_uniform_location, width as f32, height as f32);
+
+    let sprite_position_attrib_location = canvas.get_attrib_location(&program, "spritePosition");
+    let vertices = [300f32, 400f32, 100f32, 100f32];
+    canvas.draw_vertices(sprite_position_attrib_location, &vertices);
+
     Ok(())
 }
