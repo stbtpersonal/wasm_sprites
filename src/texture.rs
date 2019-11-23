@@ -1,8 +1,8 @@
 use wasm_bindgen::JsCast;
 use web_sys::{
     HtmlImageElement,
-    WebGlTexture,
     WebGlRenderingContext,
+    WebGlTexture,
 };
 
 use crate::canvas::Canvas;

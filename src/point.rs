@@ -1,4 +1,4 @@
 pub struct Point {
-    pub x: u32,
-    pub y: u32,
+    pub x: f32,
+    pub y: f32,
 }
