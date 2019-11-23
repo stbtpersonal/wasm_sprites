@@ -16,12 +16,12 @@ mod logging;
 pub fn main() {
     let canvas = Canvas::initialize("canvas");
     let sprite_shader = SpriteShader::new(&canvas);
-    let icon_texture = Texture::new(&canvas, "icon");
-    let mut sprite = Sprite::new(&canvas, &sprite_shader, &icon_texture);
+    let pikachu_texture = Texture::new(&canvas, "pikachu");
+    let mut pikachu_sprite = Sprite::new(&canvas, &sprite_shader, &pikachu_texture);
 
     canvas.clear();
-    sprite.set_position(100f32, 250f32);
-    sprite.draw();
+    pikachu_sprite.set_position(100f32, 250f32);
+    pikachu_sprite.draw();
 
     console_log!("Success!");
 }
