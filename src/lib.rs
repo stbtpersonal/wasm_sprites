@@ -2,10 +2,12 @@ use wasm_bindgen::prelude::*;
 
 mod canvas;
 mod texture;
+mod shader;
 mod logging;
 
 use canvas::Canvas;
 use texture::Texture;
+use shader::Shader;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -29,14 +31,15 @@ pub fn main() -> Result<(), JsValue> {
             gl_FragColor = texture2D(spriteTexture, gl_PointCoord);
         }
     ";
-    let program = canvas.compile_program(vertex_shader_source, fragment_shader_source);
+    let shader_program = Shader::new(&canvas, vertex_shader_source, fragment_shader_source);
+    let program = shader_program.program();
 
-    canvas.use_program(&program);
-    let screen_size_uniform_location = canvas.get_uniform_location(&program, "screenSize");
+    canvas.use_program(program);
+    let screen_size_uniform_location = canvas.get_uniform_location(program, "screenSize");
     let (width, height) = canvas.dimensions();
     canvas.uniform2f(&screen_size_uniform_location, width as f32, height as f32);
 
-    let sprite_position_attrib_location = canvas.get_attrib_location(&program, "spritePosition");
+    let sprite_position_attrib_location = canvas.get_attrib_location(program, "spritePosition");
     let vertices = [300f32, 400f32, 100f32, 100f32, 140f32, 80f32];
     canvas.draw_vertices(sprite_position_attrib_location, &vertices);
 

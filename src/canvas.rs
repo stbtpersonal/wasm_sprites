@@ -3,8 +3,6 @@ use web_sys;
 use web_sys::{
     HtmlCanvasElement,
     WebGlRenderingContext,
-    WebGlProgram,
-    WebGlShader,
 };
 
 pub struct Canvas {
@@ -43,46 +41,6 @@ impl Canvas {
 
     pub fn gl(&self) -> &WebGlRenderingContext {
         &self.gl
-    }
-
-    pub fn compile_program(&self, vertex_shader_source: &str, fragment_shader_source: &str) -> WebGlProgram {
-        let vertex_shader = self.compile_vertex_shader(vertex_shader_source);
-        let fragment_shader = self.compile_fragment_shader(fragment_shader_source);
-
-        let program = self.gl.create_program().unwrap();
-        self.gl.attach_shader(&program, &vertex_shader);
-        self.gl.attach_shader(&program, &fragment_shader);
-        self.gl.link_program(&program);
-
-        let program_link_status = self.gl.get_program_parameter(&program, WebGlRenderingContext::LINK_STATUS).as_bool().unwrap();
-        if !program_link_status {
-            let error = self.gl.get_program_info_log(&program).unwrap();
-            panic!("Program link failed: {}", error);
-        }
-
-        program
-    }
-
-    fn compile_vertex_shader(&self, source: &str) -> WebGlShader {
-        self.compile_shader(WebGlRenderingContext::VERTEX_SHADER, source)
-    }
-
-    fn compile_fragment_shader(&self, source: &str) -> WebGlShader {
-        self.compile_shader(WebGlRenderingContext::FRAGMENT_SHADER, source)
-    }
-
-    fn compile_shader(&self, shader_type: u32, source: &str) -> WebGlShader {
-        let shader = self.gl.create_shader(shader_type).unwrap();
-        self.gl.shader_source(&shader, source);
-        self.gl.compile_shader(&shader);
-
-        let shader_compile_status = self.gl.get_shader_parameter(&shader, WebGlRenderingContext::COMPILE_STATUS).as_bool().unwrap();
-        if !shader_compile_status {
-            let error = self.gl.get_shader_info_log(&shader).unwrap();
-            panic!("Shader compilation failed: {}", error)
-        }
-
-        shader
     }
 
     pub fn use_program(&self, program: &web_sys::WebGlProgram) {
