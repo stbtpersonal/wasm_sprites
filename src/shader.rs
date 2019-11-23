@@ -7,7 +7,7 @@ use web_sys::{
 use crate::canvas::Canvas;
 
 pub struct Shader {
-    program: WebGlProgram
+    program: WebGlProgram,
 }
 
 impl Shader {
@@ -15,7 +15,7 @@ impl Shader {
         let program = Shader::compile_program(canvas, vertex_shader_source, fragment_shader_source);
 
         Shader {
-            program
+            program,
         }
     }
 
