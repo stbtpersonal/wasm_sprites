@@ -4,20 +4,22 @@ mod canvas;
 mod texture;
 mod shader;
 mod sprite;
+mod point;
 mod logging;
 
 use canvas::Canvas;
 use texture::Texture;
 use sprite::SpriteShader;
+use sprite::Sprite;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     let canvas = Canvas::initialize("canvas");
-    let icon_texture = Texture::new(&canvas, "icon");
-
     let sprite_shader = SpriteShader::new(&canvas);
-    let program = sprite_shader.program();
+    let icon_texture = Texture::new(&canvas, "icon");
+    let sprite = Sprite::new(&sprite_shader, &icon_texture);
 
+    let program = sprite_shader.program();
     canvas.use_program(program);
     let screen_size_uniform_location = canvas.get_uniform_location(program, "screenSize");
     let (width, height) = canvas.dimensions();

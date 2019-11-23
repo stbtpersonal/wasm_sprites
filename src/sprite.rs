@@ -1,9 +1,9 @@
-use web_sys::{
-    WebGlProgram,
-};
+use web_sys::WebGlProgram;
 
 use crate::canvas::Canvas;
 use crate::shader::Shader;
+use crate::point::Point;
+use crate::texture::Texture;
 
 const SPRITE_VERTEX_SHADER_SOURCE: &str = "
         uniform vec2 screenSize;        // width/height of screen
@@ -39,5 +39,26 @@ impl SpriteShader {
 
     pub fn program(&self) -> &WebGlProgram {
         self.shader.program()
+    }
+}
+
+pub struct Sprite<'a> {
+    shader: &'a SpriteShader,
+    texture: &'a Texture,
+    position: Point,
+}
+
+impl<'a> Sprite<'a> {
+    pub fn new(shader: &'a SpriteShader, texture: &'a Texture) -> Sprite<'a> {
+        Sprite {
+            shader,
+            texture,
+            position: Point { x: 0, y: 0 },
+        }
+    }
+
+    pub fn set_position(&mut self, x: u32, y: u32) {
+        self.position.x = x;
+        self.position.y = y;
     }
 }
