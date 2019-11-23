@@ -1,14 +1,18 @@
 use wasm_bindgen::prelude::*;
 
 mod canvas;
+mod texture;
 mod logging;
+
+use canvas::Canvas;
+use texture::Texture;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
-    let canvas = canvas::Canvas::initialize();
-    let (width, height) = canvas.dimensions();
+    let canvas = Canvas::initialize("canvas");
+    let icon_texture = Texture::new(&canvas, "icon");
 
-    let vertex_shader = canvas.compile_vertex_shader("
+    let vertex_shader_source = "
         uniform vec2 screenSize;        // width/height of screen
         attribute vec2 spritePosition;  // position of sprite
 
@@ -17,18 +21,19 @@ pub fn main() -> Result<(), JsValue> {
             gl_Position = vec4(spritePosition * screenTransform.xy + screenTransform.zw, 0.0, 1.0);
             gl_PointSize = 64.0;
         }
-    ")?;
-    let fragment_shader = canvas.compile_fragment_shader("
+    ";
+    let fragment_shader_source = "
         uniform sampler2D spriteTexture;  // texture we are drawing
 
         void main() {
             gl_FragColor = texture2D(spriteTexture, gl_PointCoord);
         }
-    ")?;
-    let program = canvas.compile_program(&vertex_shader, &fragment_shader)?;
+    ";
+    let program = canvas.compile_program(vertex_shader_source, fragment_shader_source);
 
     canvas.use_program(&program);
     let screen_size_uniform_location = canvas.get_uniform_location(&program, "screenSize");
+    let (width, height) = canvas.dimensions();
     canvas.uniform2f(&screen_size_uniform_location, width as f32, height as f32);
 
     let sprite_position_attrib_location = canvas.get_attrib_location(&program, "spritePosition");
