@@ -1,9 +1,5 @@
 use wasm_bindgen::JsCast;
-use web_sys::{
-    HtmlImageElement,
-    WebGlRenderingContext,
-    WebGlTexture,
-};
+use web_sys::{HtmlImageElement, WebGlRenderingContext, WebGlTexture};
 
 use crate::canvas::Canvas;
 
@@ -15,9 +11,7 @@ impl Texture {
     pub fn new(canvas: &Canvas, image_id: &str) -> Texture {
         let image = Texture::get_image(image_id);
         let texture = Texture::initialize_texture(canvas, &image);
-        Texture {
-            texture,
-        }
+        Texture { texture }
     }
 
     fn get_image(image_id: &str) -> HtmlImageElement {
@@ -39,7 +33,8 @@ impl Texture {
             web_sys::WebGlRenderingContext::RGBA,
             web_sys::WebGlRenderingContext::UNSIGNED_BYTE,
             image,
-        ).unwrap();
+        )
+        .unwrap();
         gl.generate_mipmap(web_sys::WebGlRenderingContext::TEXTURE_2D);
         texture
     }

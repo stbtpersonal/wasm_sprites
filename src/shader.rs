@@ -1,8 +1,4 @@
-use web_sys::{
-    WebGlProgram,
-    WebGlRenderingContext,
-    WebGlShader,
-};
+use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader};
 
 use crate::canvas::Canvas;
 
@@ -11,15 +7,21 @@ pub struct Shader {
 }
 
 impl Shader {
-    pub fn new(canvas: &Canvas, vertex_shader_source: &str, fragment_shader_source: &str) -> Shader {
+    pub fn new(
+        canvas: &Canvas,
+        vertex_shader_source: &str,
+        fragment_shader_source: &str,
+    ) -> Shader {
         let program = Shader::compile_program(canvas, vertex_shader_source, fragment_shader_source);
 
-        Shader {
-            program,
-        }
+        Shader { program }
     }
 
-    fn compile_program(canvas: &Canvas, vertex_shader_source: &str, fragment_shader_source: &str) -> WebGlProgram {
+    fn compile_program(
+        canvas: &Canvas,
+        vertex_shader_source: &str,
+        fragment_shader_source: &str,
+    ) -> WebGlProgram {
         let vertex_shader = Shader::compile_vertex_shader(canvas, vertex_shader_source);
         let fragment_shader = Shader::compile_fragment_shader(canvas, fragment_shader_source);
 
@@ -29,7 +31,10 @@ impl Shader {
         gl.attach_shader(&program, &fragment_shader);
         gl.link_program(&program);
 
-        let program_link_status = gl.get_program_parameter(&program, WebGlRenderingContext::LINK_STATUS).as_bool().unwrap();
+        let program_link_status = gl
+            .get_program_parameter(&program, WebGlRenderingContext::LINK_STATUS)
+            .as_bool()
+            .unwrap();
         if !program_link_status {
             let error = gl.get_program_info_log(&program).unwrap();
             panic!("Program link failed: {}", error);
@@ -52,7 +57,10 @@ impl Shader {
         gl.shader_source(&shader, source);
         gl.compile_shader(&shader);
 
-        let shader_compile_status = gl.get_shader_parameter(&shader, WebGlRenderingContext::COMPILE_STATUS).as_bool().unwrap();
+        let shader_compile_status = gl
+            .get_shader_parameter(&shader, WebGlRenderingContext::COMPILE_STATUS)
+            .as_bool()
+            .unwrap();
         if !shader_compile_status {
             let error = gl.get_shader_info_log(&shader).unwrap();
             panic!("Shader compilation failed: {}", error)

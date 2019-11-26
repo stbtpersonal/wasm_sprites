@@ -1,9 +1,6 @@
 use wasm_bindgen::JsCast;
 use web_sys;
-use web_sys::{
-    HtmlCanvasElement,
-    WebGlRenderingContext,
-};
+use web_sys::{HtmlCanvasElement, WebGlRenderingContext};
 
 pub struct Canvas {
     canvas: HtmlCanvasElement,
@@ -15,10 +12,7 @@ impl Canvas {
         let canvas = Canvas::get_canvas(canvas_id);
         let gl = Canvas::initialize_gl(&canvas);
 
-        Canvas {
-            canvas,
-            gl,
-        }
+        Canvas { canvas, gl }
     }
 
     fn get_canvas(canvas_id: &str) -> HtmlCanvasElement {

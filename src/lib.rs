@@ -17,8 +17,10 @@ mod point;
 mod logging;
 
 struct State {
-    canvas: Canvas,
-    pikachus: Vec<Sprite<'static>>,
+    canvas: Rc<Canvas>,
+    _sprite_shader: Rc<SpriteShader>,
+    _pikachu_texture: Rc<Texture>,
+    pikachus: Rc<Vec<Sprite>>,
 }
 
 #[wasm_bindgen(start)]
@@ -30,28 +32,40 @@ pub fn main() {
 }
 
 fn initialize_state() -> State {
-    let canvas = Canvas::initialize("canvas");
-    let sprite_shader = SpriteShader::new(&canvas);
-    let pikachu_texture = Texture::new(&canvas, "pikachu");
+    let canvas = Rc::new(Canvas::initialize("canvas"));
+    let sprite_shader = Rc::new(SpriteShader::new(&canvas));
+    let pikachu_texture = Rc::new(Texture::new(&canvas, "pikachu"));
 
-    let mut pikachus = Vec::new();
-    let mut pikachu = Sprite::new(&canvas, &sprite_shader, &pikachu_texture);
+    let mut pikachu = Sprite::new(
+        canvas.clone(),
+        sprite_shader.clone(),
+        pikachu_texture.clone(),
+    );
     pikachu.set_position(100f32, 250f32);
-//    pikachus.push(pikachu);
+    let pikachus = Rc::new(vec![pikachu]);
 
     State {
         canvas,
+        _sprite_shader: sprite_shader,
+        _pikachu_texture: pikachu_texture,
         pikachus,
     }
 }
 
 fn run(state: State) {
+    let canvas = state.canvas;
+    let pikachus = state.pikachus;
+
     let tick_ref = Rc::new(RefCell::new(None));
     let tick_ref_clone = tick_ref.clone();
-
     *tick_ref_clone.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         console_log!("Tick!");
-        state.canvas.clear();
+
+        canvas.clear();
+        for pikachu in pikachus.iter() {
+            pikachu.draw();
+        }
+
         request_animation_frame(tick_ref.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
     request_animation_frame(tick_ref_clone.borrow().as_ref().unwrap());

@@ -1,8 +1,6 @@
 use js_sys::Float32Array;
-use web_sys::{
-    WebGlProgram,
-    WebGlRenderingContext,
-};
+use wasm_bindgen::__rt::std::rc::Rc;
+use web_sys::{WebGlProgram, WebGlRenderingContext};
 
 use crate::canvas::Canvas;
 use crate::point::Point;
@@ -34,11 +32,13 @@ pub struct SpriteShader {
 
 impl SpriteShader {
     pub fn new(canvas: &Canvas) -> SpriteShader {
-        let shader = Shader::new(canvas, SPRITE_VERTEX_SHADER_SOURCE, SPRITE_FRAGMENT_SHADER_SOURCE);
+        let shader = Shader::new(
+            canvas,
+            SPRITE_VERTEX_SHADER_SOURCE,
+            SPRITE_FRAGMENT_SHADER_SOURCE,
+        );
 
-        SpriteShader {
-            shader,
-        }
+        SpriteShader { shader }
     }
 
     pub fn program(&self) -> &WebGlProgram {
@@ -46,15 +46,15 @@ impl SpriteShader {
     }
 }
 
-pub struct Sprite<'a> {
-    canvas: &'a Canvas,
-    shader: &'a SpriteShader,
-    texture: &'a Texture,
+pub struct Sprite {
+    canvas: Rc<Canvas>,
+    shader: Rc<SpriteShader>,
+    texture: Rc<Texture>,
     position: Point,
 }
 
-impl<'a> Sprite<'a> {
-    pub fn new(canvas: &'a Canvas, shader: &'a SpriteShader, texture: &'a Texture) -> Sprite<'a> {
+impl Sprite {
+    pub fn new(canvas: Rc<Canvas>, shader: Rc<SpriteShader>, texture: Rc<Texture>) -> Sprite {
         Sprite {
             canvas,
             shader,
@@ -76,10 +76,15 @@ impl<'a> Sprite<'a> {
 
         let screen_size_uniform_location = gl.get_uniform_location(program, "screenSize").unwrap();
         let (width, height) = self.canvas.dimensions();
-        gl.uniform2f(Some(&screen_size_uniform_location), width as f32, height as f32);
+        gl.uniform2f(
+            Some(&screen_size_uniform_location),
+            width as f32,
+            height as f32,
+        );
 
         let _texture = self.texture.texture();
-        let sprite_texture_uniform_location = gl.get_uniform_location(program, "spriteTexture").unwrap();
+        let sprite_texture_uniform_location =
+            gl.get_uniform_location(program, "spriteTexture").unwrap();
         gl.uniform1i(Some(&sprite_texture_uniform_location), 0);
 
         let vertices = [self.position.x, self.position.y];
@@ -94,7 +99,8 @@ impl<'a> Sprite<'a> {
             );
         }
 
-        let sprite_position_attrib_location = gl.get_attrib_location(program, "spritePosition") as u32;
+        let sprite_position_attrib_location =
+            gl.get_attrib_location(program, "spritePosition") as u32;
         gl.enable_vertex_attrib_array(sprite_position_attrib_location);
         gl.vertex_attrib_pointer_with_i32(
             sprite_position_attrib_location,
@@ -107,7 +113,10 @@ impl<'a> Sprite<'a> {
 
         gl.color_mask(true, true, true, false);
         gl.enable(WebGlRenderingContext::BLEND);
-        gl.blend_func(WebGlRenderingContext::SRC_ALPHA, WebGlRenderingContext::ONE_MINUS_SRC_ALPHA);
+        gl.blend_func(
+            WebGlRenderingContext::SRC_ALPHA,
+            WebGlRenderingContext::ONE_MINUS_SRC_ALPHA,
+        );
         gl.draw_arrays(WebGlRenderingContext::POINTS, 0, 1);
     }
 }
