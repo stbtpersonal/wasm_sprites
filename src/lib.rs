@@ -1,7 +1,5 @@
-use std::cell::RefCell;
 use std::rc::Rc;
 
-use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
 use canvas::Canvas;
@@ -19,10 +17,10 @@ mod point;
 mod logging;
 
 #[wasm_bindgen]
-struct Game {
+pub struct Game {
     canvas: Rc<Canvas>,
-    sprite_shader: Rc<SpriteShader>,
-    pikachu_texture: Rc<Texture>,
+    _sprite_shader: Rc<SpriteShader>,
+    _pikachu_texture: Rc<Texture>,
     pikachus: Vec<Sprite>,
 }
 
@@ -43,13 +41,17 @@ impl Game {
 
         Game {
             canvas,
-            sprite_shader,
-            pikachu_texture,
+            _sprite_shader: sprite_shader,
+            _pikachu_texture: pikachu_texture,
             pikachus,
         }
     }
 
-    pub fn tick(&self) {
+    pub fn tick(&mut self) {
         console_log!("Tick!");
+        self.canvas.clear();
+        for pikachu in self.pikachus.iter() {
+            pikachu.draw();
+        }
     }
 }
