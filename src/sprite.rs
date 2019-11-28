@@ -118,5 +118,6 @@ impl Sprite {
             WebGlRenderingContext::ONE_MINUS_SRC_ALPHA,
         );
         gl.draw_arrays(WebGlRenderingContext::POINTS, 0, 1);
+        gl.color_mask(true, true, true, true);
     }
 }

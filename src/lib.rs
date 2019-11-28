@@ -7,14 +7,14 @@ use sprite::Sprite;
 use sprite::SpriteShader;
 use texture::Texture;
 
+#[macro_use]
+mod logging;
+
 mod canvas;
 mod texture;
 mod shader;
 mod sprite;
 mod point;
-
-#[macro_use]
-mod logging;
 
 #[wasm_bindgen]
 pub struct Game {
@@ -48,7 +48,6 @@ impl Game {
     }
 
     pub fn tick(&mut self) {
-        console_log!("Tick!");
         self.canvas.clear();
         for pikachu in self.pikachus.iter() {
             pikachu.draw();
