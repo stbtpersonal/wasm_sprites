@@ -8,11 +8,19 @@
 <canvas id="canvas" width="800" height="600"></canvas>
 <script type="module">
       import init from './pkg/wasm_sprites.js';
+      import { Game } from './pkg/wasm_sprites.js';
       async function run() {
         await init();
+
+        const game = Game.new();
+
+        const tick = function tick() {
+          game.tick();
+          window.requestAnimationFrame(tick);
+        };
+        window.requestAnimationFrame(tick);
       }
       run();
-
 </script>
 </body>
 </html>
