@@ -15,6 +15,7 @@ mod texture;
 mod shader;
 mod sprite;
 mod point;
+mod vector2d;
 
 #[wasm_bindgen]
 pub struct Game {
@@ -37,6 +38,7 @@ impl Game {
             pikachu_texture.clone(),
         );
         pikachu.set_position(100f32, 250f32);
+        pikachu.set_velocity(0.1f32, 0.1f32);
         let pikachus = vec![pikachu];
 
         Game {
@@ -47,7 +49,13 @@ impl Game {
         }
     }
 
-    pub fn tick(&mut self) {
+    pub fn update(&mut self, delta_time: f32) {
+        for pikachu in self.pikachus.iter_mut() {
+            pikachu.update(delta_time);
+        }
+    }
+
+    pub fn draw(&mut self) {
         self.canvas.clear();
         for pikachu in self.pikachus.iter() {
             pikachu.draw();

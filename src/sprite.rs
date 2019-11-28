@@ -6,6 +6,7 @@ use crate::canvas::Canvas;
 use crate::point::Point;
 use crate::shader::Shader;
 use crate::texture::Texture;
+use crate::vector2d::Vector2D;
 
 const SPRITE_VERTEX_SHADER_SOURCE: &str = "
         uniform vec2 screenSize;        // width/height of screen
@@ -51,6 +52,7 @@ pub struct Sprite {
     shader: Rc<SpriteShader>,
     texture: Rc<Texture>,
     position: Point,
+    velocity: Vector2D,
 }
 
 impl Sprite {
@@ -60,12 +62,41 @@ impl Sprite {
             shader,
             texture,
             position: Point { x: 0f32, y: 0f32 },
+            velocity: Vector2D { x: 0f32, y: 0f32 },
         }
     }
 
     pub fn set_position(&mut self, x: f32, y: f32) {
         self.position.x = x;
         self.position.y = y;
+    }
+
+    pub fn set_velocity(&mut self, x: f32, y: f32) {
+        self.velocity.x = x;
+        self.velocity.y = y;
+    }
+
+    pub fn update(&mut self, delta_time: f32) {
+        let (canvas_width, canvas_height) = self.canvas.dimensions();
+        let (canvas_width, canvas_height) = (canvas_width as f32, canvas_height as f32);
+        let (texture_width, texture_height) = self.texture.dimensions();
+        let (texture_width, texture_height) = (texture_width as f32, texture_height as f32);
+
+        let mut delta_x = delta_time * self.velocity.x;
+        if (self.position.x + delta_x + (texture_width / 2f32) > canvas_width)
+            || (self.position.x + delta_x - (texture_width / 2f32) < 0f32) {
+            delta_x *= -1f32;
+            self.velocity.x *= -1f32;
+        }
+        self.position.x += delta_x;
+
+        let mut delta_y = delta_time * self.velocity.y;
+        if (self.position.y + delta_y + (texture_height / 2f32) > canvas_height)
+            || (self.position.y + delta_y - (texture_height / 2f32) < 0f32) {
+            delta_y *= -1f32;
+            self.velocity.y *= -1f32;
+        }
+        self.position.y += delta_y;
     }
 
     pub fn draw(&self) {

@@ -14,11 +14,21 @@
 
         const game = Game.new();
 
-        const tick = function tick() {
-          game.tick();
-          window.requestAnimationFrame(tick);
+        let lastUpdateTime = Date.now();
+        const update = function update() {
+          const now = Date.now();
+          const deltaTime = now - lastUpdateTime;
+          lastUpdateTime = now;
+          game.update(deltaTime);
+          window.setTimeout(update, 0);
+        }
+        window.setTimeout(update, 0);
+
+        const draw = function draw() {
+          game.draw();
+          window.requestAnimationFrame(draw);
         };
-        window.requestAnimationFrame(tick);
+        window.requestAnimationFrame(draw);
       }
       run();
 </script>
