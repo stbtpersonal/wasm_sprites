@@ -4,8 +4,8 @@ use web_sys::{HtmlImageElement, WebGlRenderingContext, WebGlTexture};
 use crate::canvas::Canvas;
 
 pub struct Texture {
-    width: u32,
-    height: u32,
+    width: f32,
+    height: f32,
     texture: WebGlTexture,
 }
 
@@ -14,8 +14,8 @@ impl Texture {
         let image = Texture::get_image(image_id);
         let texture = Texture::initialize_texture(canvas, &image);
         Texture {
-            width: image.width(),
-            height: image.height(),
+            width: image.width() as f32,
+            height: image.height() as f32,
             texture,
         }
     }
@@ -40,7 +40,7 @@ impl Texture {
             web_sys::WebGlRenderingContext::UNSIGNED_BYTE,
             image,
         )
-            .unwrap();
+        .unwrap();
         gl.generate_mipmap(web_sys::WebGlRenderingContext::TEXTURE_2D);
         texture
     }
@@ -49,7 +49,7 @@ impl Texture {
         &self.texture
     }
 
-    pub fn dimensions(&self) -> (u32, u32) {
+    pub fn dimensions(&self) -> (f32, f32) {
         (self.width, self.height)
     }
 }

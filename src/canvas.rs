@@ -27,9 +27,9 @@ impl Canvas {
         gl.dyn_into::<WebGlRenderingContext>().unwrap()
     }
 
-    pub fn dimensions(&self) -> (u32, u32) {
-        let width = self.canvas.width();
-        let height = self.canvas.height();
+    pub fn dimensions(&self) -> (f32, f32) {
+        let width = self.canvas.width() as f32;
+        let height = self.canvas.height() as f32;
         (width, height)
     }
 
@@ -39,6 +39,7 @@ impl Canvas {
 
     pub fn clear(&self) {
         self.gl.clear_color(1f32, 1f32, 0f32, 1f32);
-        self.gl.clear(web_sys::WebGlRenderingContext::COLOR_BUFFER_BIT);
+        self.gl
+            .clear(web_sys::WebGlRenderingContext::COLOR_BUFFER_BIT);
     }
 }

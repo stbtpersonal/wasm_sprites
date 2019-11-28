@@ -76,29 +76,6 @@ impl Sprite {
         self.velocity.y = y;
     }
 
-    pub fn update(&mut self, delta_time: f32) {
-        let (canvas_width, canvas_height) = self.canvas.dimensions();
-        let (canvas_width, canvas_height) = (canvas_width as f32, canvas_height as f32);
-        let (texture_width, texture_height) = self.texture.dimensions();
-        let (texture_width, texture_height) = (texture_width as f32, texture_height as f32);
-
-        let mut delta_x = delta_time * self.velocity.x;
-        if (self.position.x + delta_x + (texture_width / 2f32) > canvas_width)
-            || (self.position.x + delta_x - (texture_width / 2f32) < 0f32) {
-            delta_x *= -1f32;
-            self.velocity.x *= -1f32;
-        }
-        self.position.x += delta_x;
-
-        let mut delta_y = delta_time * self.velocity.y;
-        if (self.position.y + delta_y + (texture_height / 2f32) > canvas_height)
-            || (self.position.y + delta_y - (texture_height / 2f32) < 0f32) {
-            delta_y *= -1f32;
-            self.velocity.y *= -1f32;
-        }
-        self.position.y += delta_y;
-    }
-
     pub fn draw(&self) {
         let gl = self.canvas.gl();
 
@@ -150,5 +127,29 @@ impl Sprite {
         );
         gl.draw_arrays(WebGlRenderingContext::POINTS, 0, 1);
         gl.color_mask(true, true, true, true);
+    }
+
+    pub fn update(&mut self, delta_time: f32) {
+        let (canvas_width, canvas_height) = self.canvas.dimensions();
+        let (texture_width, texture_height) = self.texture.dimensions();
+
+        self.position.x += delta_time * self.velocity.x;
+        self.position.y += delta_time * self.velocity.y;
+        if self.position.x + (texture_width / 2f32) >= canvas_width {
+            self.position.x = canvas_width - (texture_width / 2f32);
+            self.velocity.x *= -1f32;
+        }
+        if self.position.x - (texture_width / 2f32) <= 0f32 {
+            self.position.x = texture_width / 2f32;
+            self.velocity.x *= -1f32;
+        }
+        if self.position.y + (texture_height / 2f32) >= canvas_height {
+            self.position.y = canvas_height - (texture_height / 2f32);
+            self.velocity.y *= -1f32;
+        }
+        if self.position.y - (texture_height / 2f32) <= 0f32 {
+            self.position.y = texture_height / 2f32;
+            self.velocity.y *= -1f32;
+        }
     }
 }
