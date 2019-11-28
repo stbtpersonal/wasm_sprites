@@ -3,9 +3,6 @@ name = "wasm_sprites"
 version = "0.1.0"
 authors = ["user <user@user.user>"]
 edition = "2018"
-description = "TODO"
-repository = "TODO"
-license = "TODO"
 
 [lib]
 crate-type = ["cdylib"]
